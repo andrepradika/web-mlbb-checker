@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Legends Username & Region Checker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-6 rounded-lg shadow-lg w-100">
+        <h2 class="text-xl font-semibold text-center mb-4">Cek Username & Region Mobile Legends</h2>
+        <h4 class="text-sm font-semibold text-center mb-4">Masukkan ID dan Server untuk mendapatkan informasi username dan region.</h4>
+        <form id="fetchForm" class="space-y-4">
+            <label class="block">
+                <span class="text-gray-700">ID:</span>
+                <input type="text" id="ID" class="mt-1 block w-full border border-gray-300 p-2 rounded-md" required>
+            </label>
+
+            <label class="block">
+                <span class="text-gray-700">Server:</span>
+                <input type="text" id="server" class="mt-1 block w-full border border-gray-300 p-2 rounded-md" required>
+            </label>
+
+            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Fetch Data</button>
+        </form>
+
+        <div id="responseContainer" class="mt-4 p-3 bg-gray-200 rounded-md hidden">
+            <div class="result-text text-gray-800 text-sm"></div>
+        </div>
+
+        <h4 class="text-sm font-semibold text-center mt-4">Demo by andrepradika</h4>
+
+
+    </div>
+
+    <script>
+        document.getElementById("fetchForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    var id = document.getElementById("ID").value;
+    var server = document.getElementById("server").value;
+    var apiUrl = `https://yanjiestore.com/submitt.php?ID=${id}&server=${server}`;
+
+    var proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
+
+    fetch(proxyUrl)
+        .then(response => response.json())
+        .then(data => {
+            var rawResponse = data.contents;
+
+            // Extract details and remove unwanted HTML tags
+            var nicknameMatch = rawResponse.match(/Nickname:\s*([^<\n\r]+)/);
+            var countryMatch = rawResponse.match(/Akun Dibuat Negara:\s*([^<\n\r]+)/);
+
+            var nickname = nicknameMatch ? nicknameMatch[1].trim() : "Unknown";
+            var country = countryMatch ? countryMatch[1].trim() : "Unknown";
+
+            // Ensure no duplicate data
+            var formattedResponse = `
+                <p><strong>Mobile Legends Account Details:</strong></p>
+                <p>Nickname: ${nickname}</p>
+                <p>Akun Dibuat Negara: ${country}</p>
+            `;
+
+            document.querySelector(".result-text").innerHTML = formattedResponse;
+            document.getElementById("responseContainer").classList.remove("hidden");
+        })
+        .catch(error => {
+            document.querySelector(".result-text").innerHTML = "<p class='text-red-500'>Failed to retrieve data.</p>";
+            document.getElementById("responseContainer").classList.remove("hidden");
+        });
+    });
+
+    </script>
+
+</body>
+</html>
